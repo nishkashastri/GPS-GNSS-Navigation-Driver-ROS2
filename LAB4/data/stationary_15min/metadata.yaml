@@ -1,0 +1,44 @@
+rosbag2_bagfile_information:
+  version: 9
+  storage_identifier: mcap
+  duration:
+    nanoseconds: 1098349848993
+  starting_time:
+    nanoseconds_since_epoch: 1792276597775088372
+  message_count: 43935
+  topics_with_message_count:
+    - topic_metadata:
+        name: /imu
+        type: imu_driver/msg/IMUmsg
+        serialization_format: cdr
+        offered_qos_profiles:
+          - history: unknown
+            depth: 0
+            reliability: reliable
+            durability: volatile
+            deadline:
+              sec: 9223372036
+              nsec: 854775807
+            lifespan:
+              sec: 9223372036
+              nsec: 854775807
+            liveliness: automatic
+            liveliness_lease_duration:
+              sec: 9223372036
+              nsec: 854775807
+            avoid_ros_namespace_conventions: false
+        type_description_hash: RIHS01_d7d19803ede43bed90c5a27e7ae60bb51debf630129971ffee9077dc91ac990a
+      message_count: 43935
+  compression_format: ""
+  compression_mode: ""
+  relative_file_paths:
+    - stationary_15min_0.mcap
+  files:
+    - path: stationary_15min_0.mcap
+      starting_time:
+        nanoseconds_since_epoch: 1792276597775088372
+      duration:
+        nanoseconds: 1098349848993
+      message_count: 43935
+  custom_data: ~
+  ros_distro: jazzy
