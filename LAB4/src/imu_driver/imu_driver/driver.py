@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 import math
 import time
 import serial
@@ -55,8 +54,7 @@ class IMUDriver(Node):
         self.pub = self.create_publisher(IMUmsg, 'imu', 10)
 
     def configure_imu(self):
-        # Register 6: async output type -> 14 = VNYMR
-        # Register 7: async output frequency -> 40 Hz
+        
         for body in ('VNWRG,06,14', 'VNWRG,07,40'):
             self.ser.write(make_command(body))
             self.ser.flush()
@@ -88,7 +86,6 @@ class IMUDriver(Node):
         msg.header.frame_id = 'IMU1_Frame'
         msg.raw_imu = line
 
-        # Orientation: degrees -> radians -> quaternion
         qx, qy, qz, qw = euler_to_quaternion(
             math.radians(roll), math.radians(pitch), math.radians(yaw))
         msg.imu.header = msg.header
@@ -97,7 +94,6 @@ class IMUDriver(Node):
         msg.imu.orientation.z = qz
         msg.imu.orientation.w = qw
 
-        # Gyro already rad/s, accel already m/s^2
         msg.imu.angular_velocity.x = gx
         msg.imu.angular_velocity.y = gy
         msg.imu.angular_velocity.z = gz
@@ -105,7 +101,6 @@ class IMUDriver(Node):
         msg.imu.linear_acceleration.y = ay
         msg.imu.linear_acceleration.z = az
 
-        # Magnetometer: Gauss -> Tesla
         msg.mag_field.header = msg.header
         msg.mag_field.magnetic_field.x = mx * 1e-4
         msg.mag_field.magnetic_field.y = my * 1e-4
