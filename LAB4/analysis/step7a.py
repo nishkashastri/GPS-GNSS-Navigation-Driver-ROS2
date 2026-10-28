@@ -20,7 +20,6 @@ def filtfilt(x, fc, fs):
 
 stopped = np.load("velocity.npz")["stopped"]
 
-# Accel y offset at each stop (longer than 2 s), interpolated between stops
 edges = np.flatnonzero(np.diff(stopped.astype(int))) + 1
 bounds = np.concatenate([[0], edges, [len(t)]])
 t_stop, off_stop = [], []
