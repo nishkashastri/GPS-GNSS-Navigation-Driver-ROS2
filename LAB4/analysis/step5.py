@@ -1,17 +1,15 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-# ---------- Load data ----------
 d = np.load("lab4_data.npz")
 y = np.load("yaw.npz")
 t, yaw_vn = d["t"], d["yaw"]
 yaw_mag, yaw_gyro = y["yaw_mag"], y["yaw_gyro"]
 
-wrap = lambda a: (a + 180) % 360 - 180                # keep angles in [-180, 180]
-U = lambda a: np.degrees(np.unwrap(np.radians(a)))    # unwrap, in degrees
-fs = 1 / np.median(np.diff(t))                         # sample rate, ~40 Hz
+wrap = lambda a: (a + 180) % 360 - 180                
+U = lambda a: np.degrees(np.unwrap(np.radians(a)))    
+fs = 1 / np.median(np.diff(t))                        
 
-# ---------- 1st-order Butterworth low-pass (bilinear transform) ----------
 def lowpass(x, fc, fs):
     K = np.tan(np.pi * fc / fs)
     b = K / (1 + K)
@@ -22,17 +20,15 @@ def lowpass(x, fc, fs):
         out[n] = b * (x[n] + x[n-1]) - a1 * out[n-1]
     return out
 
-# forward + backward = zero delay
 def filtfilt(x, fc, fs):
     return lowpass(lowpass(x, fc, fs)[::-1], fc, fs)[::-1]
 
-# ---------- Complementary filter ----------
-# yaw = gyro + LPF(mag - gyro)  ==  LPF(mag) + HPF(gyro)
-FC = 0.05                                              # Hz
-err = wrap(yaw_mag - yaw_gyro)                         # wrapped difference
+# Complementary filter 
+FC = 0.05              
+err = wrap(yaw_mag - yaw_gyro)
 yaw_cf = wrap(yaw_gyro + filtfilt(err, FC, fs))
 
-# ---------- Results ----------
+# Results 
 offset = np.median(wrap(yaw_cf - yaw_vn))
 print("Sample rate (Hz):", fs)
 print("Median offset ours - VN-100 (deg):", offset)
@@ -45,7 +41,7 @@ print("  VN-100:", U(yaw_vn)[-1] - U(yaw_vn)[0])
 
 np.savez("yaw_cf.npz", yaw_cf=yaw_cf)
 
-# ---------- Plots ----------
+# Plots 
 fig, ax = plt.subplots(2, 1, figsize=(13, 8), sharex=True)
 
 ax[0].plot(t, U(yaw_mag), lw=0.5, alpha=0.5, label="Mag yaw (naive unwrap)")
