@@ -4,20 +4,17 @@ import matplotlib.pyplot as plt
 d = np.load("lab4_data.npz")
 t, tg, east, north = d["t"], d["tg"], d["east"], d["north"]
 v = np.load("velocity.npz")["v"]
-yaw_cf = np.load("yaw_cf.npz")["yaw_cf"]          # deg, magnetic north
+yaw_cf = np.load("yaw_cf.npz")["yaw_cf"]                    
 
 def cumtrapz(y, x):
     return np.concatenate([[0], np.cumsum(0.5 * (y[1:] + y[:-1]) * np.diff(x))])
 
-# 1. Magnetic -> true north
 DECLINATION = -14.0
 psi = np.radians(yaw_cf + DECLINATION)
 
-# 2-3. Velocity in East/North, integrate to position
 xe = cumtrapz(v * np.sin(psi), t)
 xn = cumtrapz(v * np.cos(psi), t)
 
-# 4. Align first straight segment (108-118 s)
 T_ALIGN = (108, 118)
 ga, gb = np.searchsorted(tg, T_ALIGN)
 ia, ib = np.searchsorted(t, T_ALIGN)
@@ -28,7 +25,6 @@ xe_a = np.cos(rot) * xe + np.sin(rot) * xn
 xn_a = -np.sin(rot) * xe + np.cos(rot) * xn
 print("Alignment rotation (deg):", np.degrees(rot))
 
-# 5. Scale factor from path lengths
 L_gps = np.sum(np.hypot(np.diff(east), np.diff(north)))
 L_imu = np.sum(np.hypot(np.diff(xe_a), np.diff(xn_a)))
 scale = L_gps / L_imu
