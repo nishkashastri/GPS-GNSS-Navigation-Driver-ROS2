@@ -4,7 +4,7 @@ from mcap_ros2.reader import read_ros2_messages
 
 BAG = "car_drive/car_drive_0.mcap"
 
-# --- IMU ---
+# IMU 
 t, acc, gyr, mag, yaw = [], [], [], [], []
 for m in read_ros2_messages(BAG, topics=["/imu"]):
     msg = m.ros_msg
@@ -14,10 +14,10 @@ for m in read_ros2_messages(BAG, topics=["/imu"]):
     t.append(m.log_time_ns * 1e-9)
     acc.append([a.x, a.y, a.z])
     gyr.append([g.x, g.y, g.z])
-    mag.append([b.x * 1e4, b.y * 1e4, b.z * 1e4])     # Tesla -> Gauss
-    yaw.append(float(msg.raw_string.split(",")[1]))    # VN-100's own yaw (deg)
+    mag.append([b.x * 1e4, b.y * 1e4, b.z * 1e4])     
+    yaw.append(float(msg.raw_string.split(",")[1]))    
 
-# --- GPS ---
+# GPS 
 tg, east, north = [], [], []
 for m in read_ros2_messages(BAG, topics=["/gps"]):
     tg.append(m.log_time_ns * 1e-9)
@@ -26,15 +26,15 @@ for m in read_ros2_messages(BAG, topics=["/gps"]):
 
 t, tg = np.array(t), np.array(tg)
 t0 = t[0]
-t, tg = t - t0, tg - t0                     # time in seconds from start
-east = np.array(east) - east[0]             # meters from start point
+t, tg = t - t0, tg - t0                     
+east = np.array(east) - east[0]             
 north = np.array(north) - north[0]
 
 np.savez("lab4_data.npz", t=t, acc=acc, gyr=gyr, mag=mag, yaw=yaw,
          tg=tg, east=east, north=north)
 print("IMU samples:", len(t), " GPS samples:", len(tg), " duration:", t[-1], "s")
 
-# --- Overview plots ---
+# Plots
 fig, ax = plt.subplots(1, 2, figsize=(13, 4.5))
 ax[0].plot(t, np.array(gyr)[:, 2])
 ax[0].set_xlabel("time (s)"); ax[0].set_ylabel("gyro z (rad/s)")
